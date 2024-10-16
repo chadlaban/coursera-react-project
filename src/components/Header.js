@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -39,13 +39,34 @@ const Header = () => {
     }
   };
 
+  // Bonus task
+  const [showHeader, setShowHeader] = useState(true);
+  const prevScrollPos = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
+      const isScrollingUp = prevScrollPos.current > currentScrollPos;
+
+      setShowHeader(isScrollingUp);
+
+      prevScrollPos.current = currentScrollPos;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <Box
       position="fixed"
       top={0}
       left={0}
       right={0}
-      translateY={0}
+      transform={showHeader ? "translateY(0)" : "translateY(-200px)"}
       transitionProperty="transform"
       transitionDuration=".3s"
       transitionTimingFunction="ease-in-out"
@@ -60,19 +81,26 @@ const Header = () => {
         >
           <nav>
             <HStack spacing={8}>
-                {
-                    socials.map((social, index) => (
-                        <a key={index} href={social.url} target="_blank" rel="noopener noreferrer">
-                            <FontAwesomeIcon icon={social.icon} size="2x" />
-                        </a>
-                    ))
-                }
+              {socials.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={social.icon} size="2x" />
+                </a>
+              ))}
             </HStack>
           </nav>
           <nav>
             <HStack spacing={8}>
-                <a href="/#projects" onClick={handleClick('projects')}>Projects</a>
-                <a href="/#contact-me" onClick={handleClick('contactme')}>Contact Me</a>
+              <a href="/#projects" onClick={handleClick("projects")}>
+                Projects
+              </a>
+              <a href="/#contact-me" onClick={handleClick("contactme")}>
+                Contact Me
+              </a>
             </HStack>
           </nav>
         </HStack>
